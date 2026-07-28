@@ -168,18 +168,18 @@ export default function Enquiry() {
   };
 
   return (
-    <div className="space-y-6 px-6">
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-[var(--color-forest-deep)]">
+          <h1 className="text-2xl font-bold text-[var(--color-forest-deep)] sm:text-3xl">
             Enquiry Management
           </h1>
           <p className="mt-1 text-sm text-gray-600">Manage customer enquiries</p>
         </div>
         <button
           onClick={handleAddClick}
-          className="flex items-center gap-2 rounded-lg bg-[var(--color-gold)] px-6 py-2 font-medium text-[var(--color-forest-deep)] transition-colors hover:bg-[var(--color-gold-dark)]"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--color-gold)] px-6 py-2 font-medium text-[var(--color-forest-deep)] transition-colors hover:bg-[var(--color-gold-dark)] sm:w-auto"
         >
           <HiPlus className="h-5 w-5" />
           Add Enquiry
@@ -193,7 +193,7 @@ export default function Enquiry() {
           <h3 className="font-semibold text-[var(--color-forest-deep)]">Filters</h3>
         </div> */}
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {/* Search */}
           <div className="relative">
             <HiMagnifyingGlass className="pointer-events-none absolute inset-y-0 left-3 flex h-full items-center text-gray-400" />
@@ -236,7 +236,7 @@ export default function Enquiry() {
           {/* Search Button */}
           <button
             onClick={handleSearch}
-            className="rounded-lg bg-[var(--color-forest)] px-4 py-2 font-medium text-white transition-colors hover:bg-[var(--color-forest-deep)]"
+            className="w-full rounded-lg bg-[var(--color-forest)] px-4 py-2 font-medium text-white transition-colors hover:bg-[var(--color-forest-deep)]"
           >
             Search
           </button>
@@ -264,25 +264,25 @@ export default function Enquiry() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[760px]">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
                     Name
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
                     Phone
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
                     Place
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
                     Type
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
                     Actions
                   </th>
                 </tr>
@@ -290,7 +290,7 @@ export default function Enquiry() {
               <tbody className="divide-y divide-gray-200">
                 {filteredEnquiries.map((enquiry) => (
                   <tr key={enquiry._id} className="transition-colors hover:bg-gray-50">
-                    <td className="px-6 py-2 text-sm text-gray-900">
+                    <td className="px-3 py-2 text-sm text-gray-900 sm:px-6">
                       <p className="font-medium">{enquiry.name}</p>
                       {enquiry.description && (
                         <p className="text-xs text-gray-500 line-clamp-1">
@@ -298,9 +298,9 @@ export default function Enquiry() {
                         </p>
                       )}
                     </td>
-                    <td className="px-6 py-2 text-sm text-gray-600">{enquiry.phoneNumber}</td>
-                    <td className="px-6 py-2 text-sm text-gray-600">{enquiry.place}</td>
-                    <td className="px-6 py-2 text-sm">
+                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{enquiry.phoneNumber}</td>
+                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{enquiry.place}</td>
+                    <td className="px-3 py-2 text-sm sm:px-6">
                       <span
                         className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
                           enquiry.enquiryType === 'Licence'
@@ -311,10 +311,10 @@ export default function Enquiry() {
                         {enquiry.enquiryType}
                       </span>
                     </td>
-                    <td className="px-6 py-2 text-sm text-gray-600">
+                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">
                       {new Date(enquiry.enquiryDate).toLocaleDateString('en-IN')}
                     </td>
-                    <td className="px-6 py-2 text-sm">
+                    <td className="px-3 py-2 text-sm sm:px-6">
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleEditClick(enquiry)}

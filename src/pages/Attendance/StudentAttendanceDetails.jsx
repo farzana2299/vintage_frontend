@@ -134,7 +134,7 @@ export default function StudentAttendanceDetails() {
   };
 
   return (
-    <div className="space-y-6 px-6">
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <button
@@ -144,13 +144,13 @@ export default function StudentAttendanceDetails() {
             <HiArrowLeft className="h-4 w-4" />
             Back to Attendance List
           </button>
-          <h1 className="text-3xl font-bold text-[var(--color-forest-deep)]">Student Attendance History</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-forest-deep)] sm:text-3xl">Student Attendance History</h1>
           <p className="mt-1 text-sm text-gray-600">View and manage attendance details for selected student</p>
         </div>
 
         <button
           onClick={handleAddClick}
-          className="inline-flex items-center gap-2 rounded-lg bg-[var(--color-gold)] px-6 py-2 font-medium text-[var(--color-forest-deep)] transition-colors hover:opacity-90"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--color-gold)] px-6 py-2 font-medium text-[var(--color-forest-deep)] transition-colors hover:opacity-90 sm:w-auto"
         >
           <HiPlus className="h-5 w-5" />
           Record Attendance
@@ -192,31 +192,30 @@ export default function StudentAttendanceDetails() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[900px]">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Sl No</th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Class Date</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Class</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Trainer</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Remarks</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Sl No</th>
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Class Date</th>
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Class</th>
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Trainer</th>
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Remarks</th>
+                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {attendanceDetails.map((item, index) => (
                   <tr key={item.attendanceId || item._id} className="transition-colors hover:bg-gray-50">
-                    <td className="px-6 py-2 text-sm text-gray-600">{index + 1}</td>
-                   <td className="px-6 py-2 text-sm text-gray-600">
+                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{index + 1}</td>
+                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">
                       {item.classDate ? new Date(item.classDate).toLocaleDateString('en-IN') : '-'}
-                    </td> 
-                    <td className="px-6 py-2 text-sm font-medium text-gray-900">{item.classNumber}</td>
-                    
-                    <td className="px-6 py-2 text-sm text-gray-600">{item.trainer?.trainerName || '-'}</td>
-                    <td className="px-6 py-2 text-sm text-gray-600">
+                    </td>
+                    <td className="px-3 py-2 text-sm font-medium text-gray-900 sm:px-6">{item.classNumber}</td>
+                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{item.trainer?.trainerName || '-'}</td>
+                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">
                       <span className="line-clamp-1">{item.remarks || '-'}</span>
                     </td>
-                    <td className="px-6 py-2 text-sm">
+                    <td className="px-3 py-2 text-sm sm:px-6">
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleEditClick(item)}

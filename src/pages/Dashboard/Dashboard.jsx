@@ -1,8 +1,8 @@
 export default function Dashboard() {
   return (
-    <div className="p-4 sm:p-8">
+    <div className="px-4 py-3 sm:px-6 sm:py-5 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-[var(--color-forest-deep)] mb-2">
+        <h1 className="mb-2 text-3xl font-bold text-[var(--color-forest-deep)] sm:text-4xl">
           Dashboard
         </h1>
         <p className="text-[rgba(18,33,28,0.6)]">
@@ -11,7 +11,7 @@ export default function Dashboard() {
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {[
           { label: 'Total Students', value: '245', color: 'bg-blue-50 border-blue-200' },
           { label: 'Active Trainers', value: '12', color: 'bg-green-50 border-green-200' },
