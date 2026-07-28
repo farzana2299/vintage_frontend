@@ -18,6 +18,10 @@ attendanceApi.interceptors.request.use((config) => {
 });
 
 export const getAttendances = (params = {}) => attendanceApi.get('/attendances', { params });
+export const getAttendanceStudentsSummary = (params = {}) =>
+  attendanceApi.get('/attendance/students', { params });
+export const getAttendanceByStudentId = (studentId) =>
+  attendanceApi.get(`/attendance/student/${studentId}`);
 export const getAttendanceById = (id) => attendanceApi.get(`/attendance/${id}`);
 export const createAttendance = (payload) => attendanceApi.post('/attendance', payload);
 export const updateAttendance = (id, payload) => attendanceApi.patch(`/attendance/${id}`, payload);

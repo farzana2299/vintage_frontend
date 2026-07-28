@@ -214,7 +214,7 @@ export default function Students() {
 
       {/* Filters */}
       <div className="rounded-lg bg-white p-4 shadow">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
           <div className="relative lg:col-span-2">
             <HiMagnifyingGlass className="pointer-events-none absolute inset-y-0 left-3 flex h-full items-center text-gray-400" />
             <input
@@ -246,20 +246,19 @@ export default function Students() {
             <option value="Completed">Completed</option>
           </select>
 
-          <div className="flex gap-2">
-            <button
-              onClick={handleSearch}
-              className="flex-1 rounded-lg bg-[var(--color-forest)] px-4 py-2 font-medium text-white transition-colors hover:bg-[var(--color-forest-deep)]"
-            >
-              Search
-            </button>
-            <button
-              onClick={handleClearFilters}
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
-            >
-              Clear
-            </button>
-          </div>
+          <button
+            onClick={handleSearch}
+            className="rounded-lg bg-[var(--color-forest)] px-4 py-2 font-medium text-white transition-colors hover:bg-[var(--color-forest-deep)]"
+          >
+            Search
+          </button>
+
+          <button
+            onClick={handleClearFilters}
+            className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            Clear
+          </button>
         </div>
       </div>
 

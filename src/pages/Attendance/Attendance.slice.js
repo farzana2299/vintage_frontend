@@ -44,7 +44,7 @@ const attendanceSlice = createSlice({
     },
 
     filterAttendances: (state, action) => {
-      const { searchTerm, studentId, trainerId, classDate } = action.payload;
+      const { searchTerm, studentId } = action.payload;
       let filtered = state.attendances;
 
       if (searchTerm) {
@@ -52,35 +52,20 @@ const attendanceSlice = createSlice({
         filtered = filtered.filter(
           (a) =>
             a.studentName?.toLowerCase().includes(term) ||
-            String(a.classNumber).includes(term) ||
-            a.trainerName?.toLowerCase().includes(term)
+            String(a.lastClassNumber ?? '').includes(term) ||
+            a.phoneNumber?.includes(term)
         );
       }
 
       if (studentId) {
-        filtered = filtered.filter((a) => (a.studentId?._id || a.studentId) === studentId);
+        filtered = filtered.filter((a) => a.studentId === studentId);
       }
 
-      if (trainerId) {
-        filtered = filtered.filter((a) => (a.trainerId?._id || a.trainerId) === trainerId);
-      }
-
-      if (classDate) {
-        filtered = filtered.filter((a) => {
-          if (!a.classDate) return false;
-          return new Date(a.classDate).toISOString().split('T')[0] === classDate;
-        });
-      }
-
-      state.filteredAttendances = filtered.sort(
-        (a, b) => new Date(b.classDate) - new Date(a.classDate)
-      );
+      state.filteredAttendances = filtered;
     },
 
     clearFilters: (state) => {
-      state.filteredAttendances = [...state.attendances].sort(
-        (a, b) => new Date(b.classDate) - new Date(a.classDate)
-      );
+      state.filteredAttendances = [...state.attendances];
     },
   },
 });
