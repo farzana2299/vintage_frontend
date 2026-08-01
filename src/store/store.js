@@ -6,6 +6,8 @@ import enquiryReducer from '../pages/Enquiry/Enquiry.slice';
 import trainerReducer from '../pages/Trainers/Trainer.slice';
 import studentReducer from '../pages/Students/Student.slice';
 import attendanceReducer from '../pages/Attendance/Attendance.slice';
+import paymentReducer from '../pages/Payments/Payment.slice';
+import incomeReducer from '../pages/Income/Income.slice';
 
 export const store = configureStore({
   reducer: {
@@ -15,5 +17,7 @@ export const store = configureStore({
     trainer: trainerReducer,
     student: studentReducer,
     attendance: attendanceReducer,
+    payment: paymentReducer,
+    income: incomeReducer,
   },
 });
