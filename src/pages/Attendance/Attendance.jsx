@@ -164,8 +164,8 @@ export default function Attendance() {
 
       {/* Filters */}
       <div className="rounded-lg bg-white p-4 shadow">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
-          <div className="relative lg:col-span-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+          <div className="relative sm:col-span-2 lg:col-span-2">
             <HiMagnifyingGlass className="pointer-events-none absolute inset-y-0 left-3 flex h-full items-center text-gray-400" />
             <input
               type="text"
@@ -224,42 +224,79 @@ export default function Attendance() {
             <p className="text-sm">Try adjusting filters or record a new class attendance</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px]">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Student</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Place</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Phone Number</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Total Classes</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Last Class #</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredAttendances.map((summary) => (
-                  <tr key={summary.studentId} className="transition-colors hover:bg-gray-50">
-                    <td className="px-3 py-2 text-sm font-medium text-gray-900 sm:px-6">{summary.studentName}</td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{summary.studentPlace || '-'}</td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{summary.phoneNumber || '-'}</td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{summary.totalClassesTaken ?? 0}</td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{summary.lastClassNumber ?? '-'}</td>
-                    <td className="px-3 py-2 text-sm sm:px-6">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleViewMoreClick(summary)}
-                          className="rounded-lg bg-emerald-100 px-3 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-200"
-                        >
-                          <HiEye className="mr-1 inline-block h-4 w-4" />
-                          View More
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Card list - mobile & tablet */}
+            <div className="divide-y divide-gray-200 lg:hidden">
+              {filteredAttendances.map((summary) => (
+                <div key={summary.studentId} className="space-y-3 p-4">
+                  <p className="font-medium text-gray-900">{summary.studentName}</p>
+                  <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Place</p>
+                      <p className="text-gray-700">{summary.studentPlace || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Phone</p>
+                      <p className="text-gray-700">{summary.phoneNumber || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Total Classes</p>
+                      <p className="text-gray-700">{summary.totalClassesTaken ?? 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Last Class #</p>
+                      <p className="text-gray-700">{summary.lastClassNumber ?? '-'}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleViewMoreClick(summary)}
+                    className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-emerald-100 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-200"
+                  >
+                    <HiEye className="h-4 w-4" />
+                    View More
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Table - desktop */}
+            <div className="hidden overflow-x-auto lg:block">
+              <table className="w-full min-w-[860px]">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Student</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Place</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Phone Number</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Total Classes</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Last Class #</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredAttendances.map((summary) => (
+                    <tr key={summary.studentId} className="transition-colors hover:bg-gray-50">
+                      <td className="px-3 py-2 text-sm font-medium text-gray-900 sm:px-6">{summary.studentName}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{summary.studentPlace || '-'}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{summary.phoneNumber || '-'}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{summary.totalClassesTaken ?? 0}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{summary.lastClassNumber ?? '-'}</td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleViewMoreClick(summary)}
+                            className="rounded-lg bg-emerald-100 px-3 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-200"
+                          >
+                            <HiEye className="mr-1 inline-block h-4 w-4" />
+                            View More
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {!loading && (
@@ -279,7 +316,6 @@ export default function Attendance() {
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
         attendance={selectedAttendance}
-        existingAttendances={[]}
         isLoading={isModalLoading}
       />
     </div>

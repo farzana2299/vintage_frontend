@@ -193,7 +193,7 @@ export default function Enquiry() {
           <h3 className="font-semibold text-[var(--color-forest-deep)]">Filters</h3>
         </div> */}
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           {/* Search */}
           <div className="relative">
             <HiMagnifyingGlass className="pointer-events-none absolute inset-y-0 left-3 flex h-full items-center text-gray-400" />
@@ -263,78 +263,138 @@ export default function Enquiry() {
             <p className="text-sm">Try adjusting your filters or add a new enquiry</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px]">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
-                    Name
-                  </th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
-                    Phone
-                  </th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
-                    Place
-                  </th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
-                    Type
-                  </th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
-                    Date
-                  </th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredEnquiries.map((enquiry) => (
-                  <tr key={enquiry._id} className="transition-colors hover:bg-gray-50">
-                    <td className="px-3 py-2 text-sm text-gray-900 sm:px-6">
-                      <p className="font-medium">{enquiry.name}</p>
+          <>
+            {/* Card list - mobile & tablet */}
+            <div className="divide-y divide-gray-200 lg:hidden">
+              {filteredEnquiries.map((enquiry) => (
+                <div key={enquiry._id} className="space-y-3 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-gray-900">{enquiry.name}</p>
                       {enquiry.description && (
-                        <p className="text-xs text-gray-500 line-clamp-1">
-                          {enquiry.description}
-                        </p>
+                        <p className="text-xs text-gray-500 line-clamp-1">{enquiry.description}</p>
                       )}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{enquiry.phoneNumber}</td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{enquiry.place}</td>
-                    <td className="px-3 py-2 text-sm sm:px-6">
-                      <span
-                        className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                          enquiry.enquiryType === 'Licence'
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-green-100 text-green-800'
-                        }`}
-                      >
-                        {enquiry.enquiryType}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">
-                      {new Date(enquiry.enquiryDate).toLocaleDateString('en-IN')}
-                    </td>
-                    <td className="px-3 py-2 text-sm sm:px-6">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEditClick(enquiry)}
-                          className="rounded-lg bg-blue-100 p-2 text-blue-600 transition-colors hover:bg-blue-200"
-                        >
-                          <HiPencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(enquiry)}
-                          className="rounded-lg bg-red-100 p-2 text-red-600 transition-colors hover:bg-red-200"
-                        >
-                          <HiTrash className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+                    </div>
+                    <span
+                      className={`inline-block shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
+                        enquiry.enquiryType === 'Licence'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-green-100 text-green-800'
+                      }`}
+                    >
+                      {enquiry.enquiryType}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Phone</p>
+                      <p className="text-gray-700">{enquiry.phoneNumber || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Place</p>
+                      <p className="text-gray-700">{enquiry.place || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Date</p>
+                      <p className="text-gray-700">
+                        {new Date(enquiry.enquiryDate).toLocaleDateString('en-IN')}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => handleEditClick(enquiry)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-blue-100 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-200"
+                    >
+                      <HiPencil className="h-4 w-4" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(enquiry)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-red-100 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-200"
+                    >
+                      <HiTrash className="h-4 w-4" />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Table - desktop */}
+            <div className="hidden overflow-x-auto lg:block">
+              <table className="w-full min-w-[760px]">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
+                      Name
+                    </th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
+                      Phone
+                    </th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
+                      Place
+                    </th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
+                      Type
+                    </th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
+                      Date
+                    </th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredEnquiries.map((enquiry) => (
+                    <tr key={enquiry._id} className="transition-colors hover:bg-gray-50">
+                      <td className="px-3 py-2 text-sm text-gray-900 sm:px-6">
+                        <p className="font-medium">{enquiry.name}</p>
+                        {enquiry.description && (
+                          <p className="text-xs text-gray-500 line-clamp-1">
+                            {enquiry.description}
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{enquiry.phoneNumber}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{enquiry.place}</td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <span
+                          className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                            enquiry.enquiryType === 'Licence'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-green-100 text-green-800'
+                          }`}
+                        >
+                          {enquiry.enquiryType}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">
+                        {new Date(enquiry.enquiryDate).toLocaleDateString('en-IN')}
+                      </td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditClick(enquiry)}
+                            className="rounded-lg bg-blue-100 p-2 text-blue-600 transition-colors hover:bg-blue-200"
+                          >
+                            <HiPencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(enquiry)}
+                            className="rounded-lg bg-red-100 p-2 text-red-600 transition-colors hover:bg-red-200"
+                          >
+                            <HiTrash className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {!loading && (

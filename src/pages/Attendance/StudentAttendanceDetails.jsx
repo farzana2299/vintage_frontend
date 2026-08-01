@@ -60,12 +60,6 @@ export default function StudentAttendanceDetails() {
     remarks: item.remarks || '',
   });
 
-  const normalizedExistingAttendances = attendanceDetails.map((item) => ({
-    _id: item.attendanceId || item._id,
-    studentId,
-    classNumber: item.classNumber,
-  }));
-
   const handleAddClick = () => {
     setSelectedAttendance(null);
     setIsModalOpen(true);
@@ -159,7 +153,7 @@ export default function StudentAttendanceDetails() {
 
       {studentDetails && (
         <div className="rounded-lg bg-white p-4 shadow">
-          <div className="grid gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div>
               <p className="text-xs uppercase tracking-[0.14em] text-gray-500">Student Name</p>
               <p className="mt-1 text-sm font-semibold text-gray-900">{studentDetails.name || '-'}</p>
@@ -191,51 +185,97 @@ export default function StudentAttendanceDetails() {
             <p className="text-sm">Use Record Attendance to add classes for this student</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px]">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Sl No</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Class Date</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Class</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Trainer</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Remarks</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {attendanceDetails.map((item, index) => (
-                  <tr key={item.attendanceId || item._id} className="transition-colors hover:bg-gray-50">
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{index + 1}</td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">
+          <>
+            {/* Card list - mobile & tablet */}
+            <div className="divide-y divide-gray-200 lg:hidden">
+              {attendanceDetails.map((item, index) => (
+                <div key={item.attendanceId || item._id} className="space-y-3 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-medium text-gray-900">
+                      Class #{item.classNumber}{' '}
+                      <span className="font-normal text-gray-500">(Sl {index + 1})</span>
+                    </p>
+                    <p className="shrink-0 text-sm text-gray-600">
                       {item.classDate ? new Date(item.classDate).toLocaleDateString('en-IN') : '-'}
-                    </td>
-                    <td className="px-3 py-2 text-sm font-medium text-gray-900 sm:px-6">{item.classNumber}</td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{item.trainer?.trainerName || '-'}</td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">
-                      <span className="line-clamp-1">{item.remarks || '-'}</span>
-                    </td>
-                    <td className="px-3 py-2 text-sm sm:px-6">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEditClick(item)}
-                          className="rounded-lg bg-blue-100 p-2 text-blue-600 transition-colors hover:bg-blue-200"
-                        >
-                          <HiPencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirm(item)}
-                          className="rounded-lg bg-red-100 p-2 text-red-600 transition-colors hover:bg-red-200"
-                        >
-                          <HiTrash className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Trainer</p>
+                      <p className="text-gray-700">{item.trainer?.trainerName || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Remarks</p>
+                      <p className="line-clamp-1 text-gray-700">{item.remarks || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => handleEditClick(item)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-blue-100 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-200"
+                    >
+                      <HiPencil className="h-4 w-4" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm(item)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-red-100 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-200"
+                    >
+                      <HiTrash className="h-4 w-4" />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Table - desktop */}
+            <div className="hidden overflow-x-auto lg:block">
+              <table className="w-full min-w-[900px]">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Sl No</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Class Date</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Class</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Trainer</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Remarks</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {attendanceDetails.map((item, index) => (
+                    <tr key={item.attendanceId || item._id} className="transition-colors hover:bg-gray-50">
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{index + 1}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">
+                        {item.classDate ? new Date(item.classDate).toLocaleDateString('en-IN') : '-'}
+                      </td>
+                      <td className="px-3 py-2 text-sm font-medium text-gray-900 sm:px-6">{item.classNumber}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{item.trainer?.trainerName || '-'}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">
+                        <span className="line-clamp-1">{item.remarks || '-'}</span>
+                      </td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditClick(item)}
+                            className="rounded-lg bg-blue-100 p-2 text-blue-600 transition-colors hover:bg-blue-200"
+                          >
+                            <HiPencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => setDeleteConfirm(item)}
+                            className="rounded-lg bg-red-100 p-2 text-red-600 transition-colors hover:bg-red-200"
+                          >
+                            <HiTrash className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -244,7 +284,6 @@ export default function StudentAttendanceDetails() {
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
         attendance={selectedAttendance}
-        existingAttendances={normalizedExistingAttendances}
         isLoading={isModalLoading}
       />
 

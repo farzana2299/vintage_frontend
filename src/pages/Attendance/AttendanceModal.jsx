@@ -15,7 +15,6 @@ export default function AttendanceModal({
   onClose,
   onSubmit,
   attendance = null,
-  existingAttendances = [],
   isLoading = false,
 }) {
   const [form, setForm] = useState({
@@ -110,19 +109,6 @@ export default function AttendanceModal({
     }
 
     if (!form.trainerId) e.trainerId = 'Trainer is required';
-
-    const duplicateClassForStudent = existingAttendances.some((item) => {
-      const itemStudentId = item.studentId?._id || item.studentId;
-      const currentStudentId = form.studentId;
-      const sameStudent = itemStudentId === currentStudentId;
-      const sameClassNumber = Number(item.classNumber) === Number(form.classNumber);
-      const isSameRecord = attendance && item._id === attendance._id;
-      return sameStudent && sameClassNumber && !isSameRecord;
-    });
-
-    if (!e.classNumber && !e.studentId && duplicateClassForStudent) {
-      e.classNumber = 'Class number must be unique for the selected student';
-    }
 
     if (form.remarks && form.remarks.length > 500) {
       e.remarks = 'Remarks cannot exceed 500 characters';

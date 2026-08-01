@@ -214,8 +214,8 @@ export default function Students() {
 
       {/* Filters */}
       <div className="rounded-lg bg-white p-4 shadow">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
-          <div className="relative lg:col-span-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+          <div className="relative sm:col-span-2 lg:col-span-2">
             <HiMagnifyingGlass className="pointer-events-none absolute inset-y-0 left-3 flex h-full items-center text-gray-400" />
             <input
               type="text"
@@ -274,93 +274,178 @@ export default function Students() {
             <p className="text-sm">Try adjusting your filters or register a new student</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px]">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Name</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Mobile</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Place</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Type</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Status</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredStudents.map((student) => (
-                  <tr key={student._id} className="transition-colors hover:bg-gray-50">
-                    <td className="px-3 py-2 text-sm sm:px-6">
-                      <div className="flex items-center gap-3">
-                        {student.photoUrl ? (
-                          <img
-                            src={student.photoUrl}
-                            alt={student.name}
-                            className="h-8 w-8 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
-                            {student.name?.charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                        <div>
-                          <p className="font-medium text-gray-900">{student.name}</p>
-                          {student.applicationNumber && (
-                            <p className="text-xs text-gray-500">App: {student.applicationNumber}</p>
-                          )}
+          <>
+            {/* Card list - mobile & tablet */}
+            <div className="divide-y divide-gray-200 lg:hidden">
+              {filteredStudents.map((student) => (
+                <div key={student._id} className="space-y-3 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      {student.photoUrl ? (
+                        <img
+                          src={student.photoUrl}
+                          alt={student.name}
+                          className="h-9 w-9 shrink-0 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
+                          {student.name?.charAt(0).toUpperCase()}
                         </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-gray-900">{student.name}</p>
+                        {student.applicationNumber && (
+                          <p className="truncate text-xs text-gray-500">App: {student.applicationNumber}</p>
+                        )}
                       </div>
-                    </td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{student.mobileNumber}</td>
-                    <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{student.place}</td>
-                    <td className="px-3 py-2 text-sm sm:px-6">
-                      <span
-                        className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                          student.studentType === 'Driving Licence'
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-purple-100 text-purple-800'
-                        }`}
-                      >
-                        {student.studentType}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 text-sm sm:px-6">
-                      <span
-                        className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                          student.currentStatus === 'Completed'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}
-                      >
-                        {student.currentStatus}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 text-sm sm:px-6">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleViewClick(student._id)}
-                          className="rounded-lg bg-emerald-100 p-2 text-emerald-700 transition-colors hover:bg-emerald-200"
-                        >
-                          <HiEye className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEditClick(student)}
-                          className="rounded-lg bg-blue-100 p-2 text-blue-600 transition-colors hover:bg-blue-200"
-                        >
-                          <HiPencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(student)}
-                          className="rounded-lg bg-red-100 p-2 text-red-600 transition-colors hover:bg-red-200"
-                        >
-                          <HiTrash className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <span
+                      className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                        student.studentType === 'Driving Licence'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-purple-100 text-purple-800'
+                      }`}
+                    >
+                      {student.studentType}
+                    </span>
+                    <span
+                      className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                        student.currentStatus === 'Completed'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}
+                    >
+                      {student.currentStatus}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Mobile</p>
+                      <p className="text-gray-700">{student.mobileNumber || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Place</p>
+                      <p className="text-gray-700">{student.place || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => handleViewClick(student._id)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-100 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-200"
+                    >
+                      <HiEye className="h-4 w-4" />
+                      View
+                    </button>
+                    <button
+                      onClick={() => handleEditClick(student)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-blue-100 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-200"
+                    >
+                      <HiPencil className="h-4 w-4" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(student)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-red-100 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-200"
+                    >
+                      <HiTrash className="h-4 w-4" />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Table - desktop */}
+            <div className="hidden overflow-x-auto lg:block">
+              <table className="w-full min-w-[860px]">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Name</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Mobile</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Place</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Type</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Status</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredStudents.map((student) => (
+                    <tr key={student._id} className="transition-colors hover:bg-gray-50">
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <div className="flex items-center gap-3">
+                          {student.photoUrl ? (
+                            <img
+                              src={student.photoUrl}
+                              alt={student.name}
+                              className="h-8 w-8 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
+                              {student.name?.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-medium text-gray-900">{student.name}</p>
+                            {student.applicationNumber && (
+                              <p className="text-xs text-gray-500">App: {student.applicationNumber}</p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{student.mobileNumber}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{student.place}</td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <span
+                          className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                            student.studentType === 'Driving Licence'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-purple-100 text-purple-800'
+                          }`}
+                        >
+                          {student.studentType}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <span
+                          className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                            student.currentStatus === 'Completed'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}
+                        >
+                          {student.currentStatus}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleViewClick(student._id)}
+                            className="rounded-lg bg-emerald-100 p-2 text-emerald-700 transition-colors hover:bg-emerald-200"
+                          >
+                            <HiEye className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleEditClick(student)}
+                            className="rounded-lg bg-blue-100 p-2 text-blue-600 transition-colors hover:bg-blue-200"
+                          >
+                            <HiPencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(student)}
+                            className="rounded-lg bg-red-100 p-2 text-red-600 transition-colors hover:bg-red-200"
+                          >
+                            <HiTrash className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {!loading && (
