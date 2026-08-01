@@ -9,6 +9,7 @@ import {
 } from '../../services/payment.service';
 import PaymentModal from './PaymentModal';
 import { HiArrowLeft, HiPlus, HiPencil, HiTrash } from 'react-icons/hi2';
+import { PAYMENT_TYPES } from '../../constants/constants';
 
 const formatCurrency = (amount) =>
   amount !== undefined && amount !== null ? `₹${Number(amount).toLocaleString('en-IN')}` : '-';
@@ -241,8 +242,11 @@ export default function StudentPaymentDetails() {
             className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
           >
             <option value="">All Types</option>
-            <option value="Registration">Registration</option>
-            <option value="Class">Class</option>
+            {PAYMENT_TYPES.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
           </select>
 
           <input

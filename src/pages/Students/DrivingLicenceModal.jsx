@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { HiXMark, HiPhoto } from 'react-icons/hi2';
+import {
+  GENDER_OPTIONS,
+  CLASS_OF_VEHICLE_OPTIONS,
+  CURRENT_STATUS_OPTIONS,
+} from '../../constants/constants';
 
 const INITIAL_FORM = {
   studentType: 'Driving Licence',
@@ -201,9 +206,11 @@ export default function DrivingLicenceModal({
                 onChange={handleChange}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
               >
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
+                {GENDER_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -239,8 +246,11 @@ export default function DrivingLicenceModal({
                 onChange={handleChange}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
               >
-                <option value="LMV">LMV</option>
-                <option value="MCWG">MCWG</option>
+                {CLASS_OF_VEHICLE_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -255,8 +265,11 @@ export default function DrivingLicenceModal({
                 onChange={handleChange}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
               >
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
+                {CURRENT_STATUS_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
               </select>
             </div>
 

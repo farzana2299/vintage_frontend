@@ -26,6 +26,7 @@ import {
   HiFunnel,
 } from 'react-icons/hi2';
 import Pagination from '../../componds/Pagination';
+import { ENQUIRY_TYPES } from '../../constants/constants';
 
 export default function Enquiry() {
   const dispatch = useAppDispatch();
@@ -213,8 +214,11 @@ export default function Enquiry() {
             className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
           >
             <option value="">All Types</option>
-            <option value="Licence">Licence</option>
-            <option value="Practice">Practice</option>
+            {ENQUIRY_TYPES.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
           </select>
 
           {/* Start Date */}

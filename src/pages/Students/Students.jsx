@@ -22,6 +22,7 @@ import DrivingLicenceModal from './DrivingLicenceModal';
 import PracticeModal from './PracticeModal';
 import Pagination from '../../componds/Pagination';
 import { HiPlus, HiMagnifyingGlass, HiPencil, HiTrash, HiEye } from 'react-icons/hi2';
+import { CURRENT_STATUS_OPTIONS } from '../../constants/constants';
 
 export default function Students() {
   const dispatch = useAppDispatch();
@@ -242,8 +243,11 @@ export default function Students() {
             className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
           >
             <option value="">All Statuses</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
+            {CURRENT_STATUS_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
           </select>
 
           <button

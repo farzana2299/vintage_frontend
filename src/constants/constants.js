@@ -1,0 +1,6 @@
+export const INCOME_TYPES = ['Registration Fees', 'Class Fees', 'Test Fees', 'Failed Fees', 'Others'];
+export const ENQUIRY_TYPES = ['Licence', 'Practice'];
+export const GENDER_OPTIONS = ['Male', 'Female', 'Other'];
+export const CLASS_OF_VEHICLE_OPTIONS = ['LMV', 'MCWG'];
+export const CURRENT_STATUS_OPTIONS = ['In Progress', 'Completed'];
+export const PAYMENT_TYPES = ['Registration', 'Class'];
