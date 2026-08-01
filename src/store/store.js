@@ -8,6 +8,7 @@ import studentReducer from '../pages/Students/Student.slice';
 import attendanceReducer from '../pages/Attendance/Attendance.slice';
 import paymentReducer from '../pages/Payments/Payment.slice';
 import incomeReducer from '../pages/Income/Income.slice';
+import expenseReducer from '../pages/Expenses/Expense.slice';
 
 export const store = configureStore({
   reducer: {
@@ -19,5 +20,6 @@ export const store = configureStore({
     attendance: attendanceReducer,
     payment: paymentReducer,
     income: incomeReducer,
+    expense: expenseReducer,
   },
 });

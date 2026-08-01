@@ -13,6 +13,7 @@ import StudentAttendanceDetails from './pages/Attendance/StudentAttendanceDetail
 import Payments from './pages/Payments/Payments';
 import StudentPaymentDetails from './pages/Payments/StudentPaymentDetails';
 import Income from './pages/Income/Income';
+import Expenses from './pages/Expenses/Expenses';
 
 export default function App() {
   const location = useLocation();
@@ -41,7 +42,7 @@ export default function App() {
           <Route path="/attendance/student/:studentId" element={<StudentAttendanceDetails />} />
           <Route path="/tests" element={<div className="p-8"><h1 className="text-4xl font-bold">Tests</h1></div>} />
           <Route path="/income" element={<Income />} />
-          <Route path="/expense" element={<div className="p-8"><h1 className="text-4xl font-bold">Expense</h1></div>} />
+          <Route path="/expense" element={<Expenses />} />
         </Route>
       </Routes>
       <ToastContainer />
