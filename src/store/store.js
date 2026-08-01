@@ -9,6 +9,7 @@ import attendanceReducer from '../pages/Attendance/Attendance.slice';
 import paymentReducer from '../pages/Payments/Payment.slice';
 import incomeReducer from '../pages/Income/Income.slice';
 import expenseReducer from '../pages/Expenses/Expense.slice';
+import testReducer from '../pages/Tests/Test.slice';
 
 export const store = configureStore({
   reducer: {
@@ -21,5 +22,6 @@ export const store = configureStore({
     payment: paymentReducer,
     income: incomeReducer,
     expense: expenseReducer,
+    test: testReducer,
   },
 });
