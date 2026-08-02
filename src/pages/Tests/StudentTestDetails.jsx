@@ -161,7 +161,7 @@ export default function StudentTestDetails() {
             <div>
               <p className="text-xs uppercase tracking-[0.14em] text-gray-500">Phone Number</p>
               <p className="mt-1 text-sm font-semibold text-gray-900">
-                {studentDetails.phoneNumber || studentDetails.mobileNumber || '-'}
+                {studentDetails.mobileNumber || studentDetails.phoneNumber || '-'}
               </p>
             </div>
             <div>
@@ -170,7 +170,7 @@ export default function StudentTestDetails() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.14em] text-gray-500">Vehicle Class</p>
-              <p className="mt-1 text-sm font-semibold text-gray-900">{studentDetails.classOfVehicle || '-'}</p>
+              <p className="mt-1 text-sm font-semibold text-gray-900">{studentDetails.vehicleClass || '-'}</p>
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.14em] text-gray-500">Current Status</p>
