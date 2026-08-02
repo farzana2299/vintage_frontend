@@ -14,14 +14,15 @@ export default function TestHistoryModal({ isOpen, onClose, test }) {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    if (!isOpen || !test?._id) {
+    const testId = test?.testId || test?._id;
+    if (!isOpen || !testId) {
       return;
     }
 
     const loadHistory = async () => {
       setIsLoading(true);
       try {
-        const response = await getTestHistory(test._id);
+        const response = await getTestHistory(testId);
         if (response?.data?.status) {
           setHistory(response.data.history || []);
         }
@@ -43,9 +44,7 @@ export default function TestHistoryModal({ isOpen, onClose, test }) {
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <div>
             <h2 className="text-xl font-bold text-[var(--color-forest-deep)]">Test History</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              {test.student?.name || test.studentName} &middot; {test.testName}
-            </p>
+            <p className="mt-1 text-sm text-gray-500">{test.testName}</p>
           </div>
           <button onClick={onClose} className="text-gray-500 transition-colors hover:text-gray-700">
             <HiXMark className="h-6 w-6" />
@@ -72,15 +71,10 @@ export default function TestHistoryModal({ isOpen, onClose, test }) {
                         entry.testStatus
                       )}`}
                     >
-                      {entry.testStatus}
+                      {entry.testStatus || 'Pending'}
                     </span>
                   </div>
                   {entry.remarks && <p className="mt-2 text-sm text-gray-600">{entry.remarks}</p>}
-                  {entry.nextTestDate && (
-                    <p className="mt-2 text-xs text-gray-500">
-                      Rescheduled to {new Date(entry.nextTestDate).toLocaleDateString('en-IN')}
-                    </p>
-                  )}
                 </div>
               ))}
             </div>

@@ -5,6 +5,6 @@ export const CLASS_OF_VEHICLE_OPTIONS = ['LMV', 'MCWG'];
 export const CURRENT_STATUS_OPTIONS = ['In Progress', 'Completed'];
 export const PAYMENT_TYPES = ['Registration', 'Class'];
 export const EXPENSE_TYPES = ['Staff Salary', 'Rent', 'Petrol', 'CNG', 'Others'];
-export const TEST_STATUS_OPTIONS = ['Pending', 'Passed', 'Failed'];
-export const TEST_NAME_OPTIONS = ['H Test', 'Road Test', '8 Test', 'LMV Road Test', 'MCWG Road Test'];
 export const VEHICLE_CLASS_OPTIONS = ['LMV', 'MCWG', 'LMV & MCWG'];
+// Result options when recording an outcome — Pending isn't a settable result, only Passed/Failed.
+export const TEST_RESULT_OPTIONS = ['Passed', 'Failed'];

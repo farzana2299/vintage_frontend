@@ -17,10 +17,19 @@ testApi.interceptors.request.use((config) => {
   return config;
 });
 
-// Mandatory tests are auto-created by the backend when a student registers.
-// createTest supports manually scheduling an additional test on top of those.
-export const getTests = (params = {}) => testApi.get('/tests', { params });
-export const getTestById = (id) => testApi.get(`/test/${id}`);
-export const createTest = (payload) => testApi.post('/test', payload);
-export const updateTest = (id, payload) => testApi.patch(`/test/${id}`, payload);
-export const getTestHistory = (id) => testApi.get(`/test/${id}/history`);
+// Tests are auto-created by the backend when a student's vehicle class is set at registration.
+export const getTestsSummary = (params = {}) => testApi.get('/tests/summary', { params });
+export const getTestsByStudentId = (studentId) => testApi.get(`/test/student/${studentId}`);
+
+// Bulk-assigns one date to every currently-undated Pending test for a student (first RTO visit).
+export const scheduleInitialTestDates = (studentId, payload) =>
+  testApi.patch(`/test/student/${studentId}/schedule`, payload);
+
+// Sets/changes the date for a single test — used both for a plain reschedule
+// and for retaking a Failed test.
+export const updateTestDate = (testId, payload) => testApi.patch(`/test/${testId}/reschedule`, payload);
+
+// Records Passed/Failed + remarks for a single test.
+export const recordTestResult = (testId, payload) => testApi.patch(`/test/${testId}/result`, payload);
+
+export const getTestHistory = (testId) => testApi.get(`/test/${testId}/history`);
