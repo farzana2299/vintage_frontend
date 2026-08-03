@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { HiXMark } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
 import { getActiveTrainers } from '../../services/trainer.service';
+import { getActiveStudents } from '../../services/student.service';
 import { EXPENSE_TYPES } from '../../constants/constants';
 
 const getTodayLocal = () => {
@@ -15,19 +16,34 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit, expense = null
     expenseDate: getTodayLocal(),
     expenseType: '',
     staffId: '',
+    studentId: '',
     amount: '',
     remarks: '',
   });
 
   const [errors, setErrors] = useState({});
   const [trainers, setTrainers] = useState([]);
+  const [students, setStudents] = useState([]);
 
   const activeTrainers = useMemo(
     () => trainers.filter((t) => t.activeStatus === 'Active' || t.isActive === true),
     [trainers]
   );
 
+  const activeStudents = useMemo(
+    () =>
+      students.filter(
+        (s) =>
+          s.currentStatus === 'In Progress' ||
+          s.activeStatus === 'Active' ||
+          s.status === 'Active' ||
+          s.isActive === true
+      ),
+    [students]
+  );
+
   const staffRequired = form.expenseType === 'Staff Salary';
+  const studentRequired = form.expenseType === 'RTO Fees';
 
   useEffect(() => {
     if (expense) {
@@ -37,6 +53,7 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit, expense = null
           : getTodayLocal(),
         expenseType: expense.expenseType || '',
         staffId: expense.staff?._id || expense.staffId || '',
+        studentId: expense.student?._id || expense.studentId || '',
         amount: expense.amount ?? '',
         remarks: expense.remarks || '',
       });
@@ -45,6 +62,7 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit, expense = null
         expenseDate: getTodayLocal(),
         expenseType: '',
         staffId: '',
+        studentId: '',
         amount: '',
         remarks: '',
       });
@@ -66,7 +84,17 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit, expense = null
       }
     };
 
+    const loadActiveStudents = async () => {
+      try {
+        const response = await getActiveStudents({ page: 1, limit: 1000 });
+        setStudents(response?.data?.students || response?.data?.data || []);
+      } catch (error) {
+        toast.error(error?.response?.data?.message || 'Failed to load active students');
+      }
+    };
+
     loadActiveTrainers();
+    loadActiveStudents();
   }, [isOpen]);
 
   const validate = () => {
@@ -82,6 +110,10 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit, expense = null
 
     if (staffRequired && !form.staffId) {
       e.staffId = 'Staff name is required for staff salary expenses';
+    }
+
+    if (studentRequired && !form.studentId) {
+      e.studentId = 'Student is required for RTO fee expenses';
     }
 
     if (!form.amount && form.amount !== 0) {
@@ -104,6 +136,7 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit, expense = null
       ...prev,
       [name]: value,
       ...(name === 'expenseType' && value !== 'Staff Salary' ? { staffId: '' } : {}),
+      ...(name === 'expenseType' && value !== 'RTO Fees' ? { studentId: '' } : {}),
     }));
   };
 
@@ -115,6 +148,7 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit, expense = null
       ...form,
       amount: Number(form.amount),
       staffId: form.staffId || undefined,
+      studentId: form.studentId || undefined,
       ...(expense && { _id: expense._id }),
     });
   };
@@ -205,6 +239,32 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit, expense = null
                   ))}
                 </select>
                 {errors.staffId && <p className="mt-1 text-sm text-red-500">{errors.staffId}</p>}
+              </div>
+            )}
+
+            {studentRequired && (
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-forest-deep)]">
+                  Student <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="studentId"
+                  value={form.studentId}
+                  onChange={handleChange}
+                  className={`mt-1 w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 ${
+                    errors.studentId
+                      ? 'border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:ring-[var(--color-gold)]'
+                  }`}
+                >
+                  <option value="">Select active student</option>
+                  {activeStudents.map((student) => (
+                    <option key={student._id} value={student._id}>
+                      {student.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.studentId && <p className="mt-1 text-sm text-red-500">{errors.studentId}</p>}
               </div>
             )}
 

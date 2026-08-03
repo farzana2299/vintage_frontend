@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   setStudents,
@@ -26,6 +27,7 @@ import { CURRENT_STATUS_OPTIONS } from '../../constants/constants';
 
 export default function Students() {
   const dispatch = useAppDispatch();
+  const [searchParams] = useSearchParams();
   const { filteredStudents, loading } = useAppSelector((state) => state.student);
 
   // Modal state
@@ -42,6 +44,12 @@ export default function Students() {
   const [searchTerm, setSearchTerm] = useState('');
   const [studentTypeFilter, setStudentTypeFilter] = useState('');
   const [currentStatusFilter, setCurrentStatusFilter] = useState('');
+  const [licenceExpiryFromFilter, setLicenceExpiryFromFilter] = useState(
+    searchParams.get('licenceExpiryFrom') || ''
+  );
+  const [licenceExpiryToFilter, setLicenceExpiryToFilter] = useState(
+    searchParams.get('licenceExpiryTo') || ''
+  );
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -50,6 +58,7 @@ export default function Students() {
 
   useEffect(() => {
     fetchStudents(page, limit);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, limit]);
 
   const getStudentPhotoUrl = (student) => {
@@ -87,6 +96,18 @@ export default function Students() {
         setPagination(
           response.data.pagination || { total: 0, page: currentPage, limit: currentLimit, pages: 1 }
         );
+        // Deep-linked from Dashboard (e.g. "Learner's Licence Expiring") — apply it once data is in.
+        if (licenceExpiryFromFilter || licenceExpiryToFilter) {
+          dispatch(
+            filterStudents({
+              searchTerm,
+              studentType: studentTypeFilter,
+              currentStatus: currentStatusFilter,
+              licenceExpiryFrom: licenceExpiryFromFilter,
+              licenceExpiryTo: licenceExpiryToFilter,
+            })
+          );
+        }
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Failed to fetch students');
@@ -180,13 +201,23 @@ export default function Students() {
 
   const handleSearch = () => {
     setPage(1);
-    dispatch(filterStudents({ searchTerm, studentType: studentTypeFilter, currentStatus: currentStatusFilter }));
+    dispatch(
+      filterStudents({
+        searchTerm,
+        studentType: studentTypeFilter,
+        currentStatus: currentStatusFilter,
+        licenceExpiryFrom: licenceExpiryFromFilter,
+        licenceExpiryTo: licenceExpiryToFilter,
+      })
+    );
   };
 
   const handleClearFilters = () => {
     setSearchTerm('');
     setStudentTypeFilter('');
     setCurrentStatusFilter('');
+    setLicenceExpiryFromFilter('');
+    setLicenceExpiryToFilter('');
     setPage(1);
     dispatch(clearFilters());
   };
@@ -215,7 +246,7 @@ export default function Students() {
 
       {/* Filters */}
       <div className="rounded-lg bg-white p-4 shadow">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8">
           <div className="relative sm:col-span-2 lg:col-span-2">
             <HiMagnifyingGlass className="pointer-events-none absolute inset-y-0 left-3 flex h-full items-center text-gray-400" />
             <input
@@ -249,6 +280,24 @@ export default function Students() {
               </option>
             ))}
           </select>
+
+          <input
+            type="date"
+            value={licenceExpiryFromFilter}
+            onChange={(e) => setLicenceExpiryFromFilter(e.target.value)}
+            max={licenceExpiryToFilter || undefined}
+            title="Learner's licence expiry from"
+            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
+          />
+
+          <input
+            type="date"
+            value={licenceExpiryToFilter}
+            onChange={(e) => setLicenceExpiryToFilter(e.target.value)}
+            min={licenceExpiryFromFilter || undefined}
+            title="Learner's licence expiry to"
+            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
+          />
 
           <button
             onClick={handleSearch}

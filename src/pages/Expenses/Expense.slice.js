@@ -57,6 +57,7 @@ const expenseSlice = createSlice({
         filtered = filtered.filter(
           (e) =>
             (e.staff?.trainerName || e.staffName || '').toLowerCase().includes(term) ||
+            (e.student?.name || e.studentName || '').toLowerCase().includes(term) ||
             e.expenseType?.toLowerCase().includes(term)
         );
       }

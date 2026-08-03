@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setTests, setLoading, setError } from './Test.slice';
 import { getTestsSummary } from '../../services/test.service';
@@ -13,13 +13,15 @@ const statusBadgeClass = (status) =>
 
 export default function Tests() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const { tests, loading } = useAppSelector((state) => state.test);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [vehicleClassFilter, setVehicleClassFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [dateFilter, setDateFilter] = useState('');
+  const [fromDateFilter, setFromDateFilter] = useState(searchParams.get('fromDate') || '');
+  const [toDateFilter, setToDateFilter] = useState(searchParams.get('toDate') || '');
 
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
@@ -34,7 +36,7 @@ export default function Tests() {
   const fetchTests = async (
     currentPage = 1,
     currentLimit = 10,
-    filters = { searchTerm, vehicleClassFilter, statusFilter, dateFilter }
+    filters = { searchTerm, vehicleClassFilter, statusFilter, fromDateFilter, toDateFilter }
   ) => {
     dispatch(setLoading(true));
     try {
@@ -42,7 +44,8 @@ export default function Tests() {
       if (filters.searchTerm) params.search = filters.searchTerm;
       if (filters.vehicleClassFilter) params.vehicleClass = filters.vehicleClassFilter;
       if (filters.statusFilter) params.currentStatus = filters.statusFilter;
-      if (filters.dateFilter) params.date = filters.dateFilter;
+      if (filters.fromDateFilter) params.fromDate = filters.fromDateFilter;
+      if (filters.toDateFilter) params.toDate = filters.toDateFilter;
 
       const response = await getTestsSummary(params);
       if (response?.data?.status) {
@@ -77,20 +80,22 @@ export default function Tests() {
 
   const handleSearch = () => {
     setPage(1);
-    fetchTests(1, limit, { searchTerm, vehicleClassFilter, statusFilter, dateFilter });
+    fetchTests(1, limit, { searchTerm, vehicleClassFilter, statusFilter, fromDateFilter, toDateFilter });
   };
 
   const handleClearFilters = () => {
     setSearchTerm('');
     setVehicleClassFilter('');
     setStatusFilter('');
-    setDateFilter('');
+    setFromDateFilter('');
+    setToDateFilter('');
     setPage(1);
     fetchTests(1, limit, {
       searchTerm: '',
       vehicleClassFilter: '',
       statusFilter: '',
-      dateFilter: '',
+      fromDateFilter: '',
+      toDateFilter: '',
     });
   };
 
@@ -115,7 +120,7 @@ export default function Tests() {
 
       {/* Filters */}
       <div className="rounded-lg bg-white p-4 shadow">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8">
           <div className="relative sm:col-span-2 lg:col-span-2">
             <HiMagnifyingGlass className="pointer-events-none absolute inset-y-0 left-3 flex h-full items-center text-gray-400" />
             <input
@@ -155,8 +160,19 @@ export default function Tests() {
 
           <input
             type="date"
-            value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}
+            value={fromDateFilter}
+            onChange={(e) => setFromDateFilter(e.target.value)}
+            max={toDateFilter || undefined}
+            placeholder="From Date"
+            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
+          />
+
+          <input
+            type="date"
+            value={toDateFilter}
+            onChange={(e) => setToDateFilter(e.target.value)}
+            min={fromDateFilter || undefined}
+            placeholder="To Date"
             className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
           />
 

@@ -240,7 +240,7 @@ export default function Expenses() {
             <HiMagnifyingGlass className="pointer-events-none absolute inset-y-0 left-3 flex h-full items-center text-gray-400" />
             <input
               type="text"
-              placeholder="Search by staff name or expense type..."
+              placeholder="Search by staff/student name or expense type..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
@@ -318,9 +318,15 @@ export default function Expenses() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate font-medium text-gray-900">{expense.expenseType}</p>
-                      {(expense.staff?.trainerName || expense.staffName) && (
+                      {(expense.staff?.trainerName ||
+                        expense.staffName ||
+                        expense.student?.name ||
+                        expense.studentName) && (
                         <p className="text-xs text-gray-500">
-                          {expense.staff?.trainerName || expense.staffName}
+                          {expense.staff?.trainerName ||
+                            expense.staffName ||
+                            expense.student?.name ||
+                            expense.studentName}
                         </p>
                       )}
                     </div>
@@ -364,7 +370,7 @@ export default function Expenses() {
                   <tr>
                     <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Date</th>
                     <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Type</th>
-                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Staff Name</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Staff / Student</th>
                     <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Amount</th>
                     <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Remarks</th>
                     <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Actions</th>
@@ -380,7 +386,11 @@ export default function Expenses() {
                       </td>
                       <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{expense.expenseType}</td>
                       <td className="px-3 py-2 text-sm font-medium text-gray-900 sm:px-6">
-                        {expense.staff?.trainerName || expense.staffName || '-'}
+                        {expense.staff?.trainerName ||
+                          expense.staffName ||
+                          expense.student?.name ||
+                          expense.studentName ||
+                          '-'}
                       </td>
                       <td className="px-3 py-2 text-sm font-medium text-gray-900 sm:px-6">
                         {formatCurrency(expense.amount)}
