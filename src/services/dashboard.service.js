@@ -21,3 +21,8 @@ dashboardApi.interceptors.request.use((config) => {
 // same date-range/vehicle-class/test-status filters, so they're fetched together.
 // params: { fromDate, toDate, vehicleClass, testStatus }
 export const getDashboard = (params = {}) => dashboardApi.get('/dashboard', { params });
+
+// Count of students who haven't attended their road safety class within a date range.
+// params: { fromDate, toDate }
+export const getRoadSafetyPendingCount = (params = {}) =>
+  dashboardApi.get('/dashboard/road-safety-pending', { params });

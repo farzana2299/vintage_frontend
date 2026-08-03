@@ -14,14 +14,16 @@ import {
   HiArrowPath,
   HiExclamationTriangle,
 } from 'react-icons/hi2';
-import { getDashboard } from '../../services/dashboard.service';
+import { getDashboard, getRoadSafetyPendingCount } from '../../services/dashboard.service';
 import StatCard from './components/StatCard';
 import IncomeExpenseChart from './components/IncomeExpenseChart';
 import { VEHICLE_CLASS_OPTIONS, TEST_STATUS_OPTIONS } from '../../constants/constants';
 
 const getMonthStartLocal = () => {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const offsetMilliseconds = monthStart.getTimezoneOffset() * 60 * 1000;
+  return new Date(monthStart.getTime() - offsetMilliseconds).toISOString().split('T')[0];
 };
 
 const getTodayLocal = () => {
@@ -149,6 +151,9 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null);
 
+  const [roadSafetyPending, setRoadSafetyPending] = useState(0);
+  const [roadSafetyLoading, setRoadSafetyLoading] = useState(false);
+
   const fetchDashboard = async () => {
     setIsLoading(true);
     try {
@@ -169,8 +174,27 @@ export default function Dashboard() {
     }
   };
 
-  useEffect(() => {
+  const fetchRoadSafetyPending = async () => {
+    setRoadSafetyLoading(true);
+    try {
+      const response = await getRoadSafetyPendingCount({ fromDate, toDate });
+      if (response?.data?.status) {
+        setRoadSafetyPending(response.data.count ?? 0);
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Failed to load road safety pending count');
+    } finally {
+      setRoadSafetyLoading(false);
+    }
+  };
+
+  const handleRefresh = () => {
     fetchDashboard();
+    fetchRoadSafetyPending();
+  };
+
+  useEffect(() => {
+    handleRefresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -263,11 +287,11 @@ export default function Dashboard() {
 
           <div className="flex items-end">
             <button
-              onClick={fetchDashboard}
-              disabled={isLoading}
+              onClick={handleRefresh}
+              disabled={isLoading || roadSafetyLoading}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--color-forest)] px-4 py-2 font-medium text-white transition-colors hover:bg-[var(--color-forest-deep)] disabled:opacity-50"
             >
-              <HiArrowPath className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <HiArrowPath className={`h-4 w-4 ${isLoading || roadSafetyLoading ? 'animate-spin' : ''}`} />
               Refresh
             </button>
           </div>
@@ -303,6 +327,15 @@ export default function Dashboard() {
             <StatCard label="Total Income" value={formatCurrency(summary.totalIncome)} icon={HiArrowTrendingUp} onClick={() => navigate('/income')} tone="good" />
             <StatCard label="Total Expense" value={formatCurrency(summary.totalExpense)} icon={HiArrowTrendingDown} onClick={() => navigate('/expense')} tone="warn" />
             <StatCard label="Net Profit" value={formatCurrency(summary.netProfit)} icon={HiBanknotes} />
+            <StatCard
+              label="Road Safety Class Pending"
+              value={roadSafetyLoading ? '…' : roadSafetyPending}
+              icon={HiExclamationTriangle}
+              onClick={() =>
+                navigate(`/students?roadSafetyStatus=No&studentType=${encodeURIComponent('Driving Licence')}`)
+              }
+              tone="warn"
+            />
           </div>
 
           {/* 2. Upcoming Driving Tests */}

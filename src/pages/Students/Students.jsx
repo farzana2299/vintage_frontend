@@ -42,7 +42,7 @@ export default function Students() {
 
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [studentTypeFilter, setStudentTypeFilter] = useState('');
+  const [studentTypeFilter, setStudentTypeFilter] = useState(searchParams.get('studentType') || '');
   const [currentStatusFilter, setCurrentStatusFilter] = useState('');
   const [licenceExpiryFromFilter, setLicenceExpiryFromFilter] = useState(
     searchParams.get('licenceExpiryFrom') || ''
@@ -50,6 +50,7 @@ export default function Students() {
   const [licenceExpiryToFilter, setLicenceExpiryToFilter] = useState(
     searchParams.get('licenceExpiryTo') || ''
   );
+  const [roadSafetyFilter, setRoadSafetyFilter] = useState(searchParams.get('roadSafetyStatus') || '');
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -96,8 +97,8 @@ export default function Students() {
         setPagination(
           response.data.pagination || { total: 0, page: currentPage, limit: currentLimit, pages: 1 }
         );
-        // Deep-linked from Dashboard (e.g. "Learner's Licence Expiring") — apply it once data is in.
-        if (licenceExpiryFromFilter || licenceExpiryToFilter) {
+        // Deep-linked from Dashboard (e.g. "Learner's Licence Expiring", "Road Safety Pending") — apply it once data is in.
+        if (licenceExpiryFromFilter || licenceExpiryToFilter || roadSafetyFilter || studentTypeFilter) {
           dispatch(
             filterStudents({
               searchTerm,
@@ -105,6 +106,7 @@ export default function Students() {
               currentStatus: currentStatusFilter,
               licenceExpiryFrom: licenceExpiryFromFilter,
               licenceExpiryTo: licenceExpiryToFilter,
+              roadSafetyStatus: roadSafetyFilter,
             })
           );
         }
@@ -208,6 +210,7 @@ export default function Students() {
         currentStatus: currentStatusFilter,
         licenceExpiryFrom: licenceExpiryFromFilter,
         licenceExpiryTo: licenceExpiryToFilter,
+        roadSafetyStatus: roadSafetyFilter,
       })
     );
   };
@@ -218,6 +221,7 @@ export default function Students() {
     setCurrentStatusFilter('');
     setLicenceExpiryFromFilter('');
     setLicenceExpiryToFilter('');
+    setRoadSafetyFilter('');
     setPage(1);
     dispatch(clearFilters());
   };
@@ -246,7 +250,7 @@ export default function Students() {
 
       {/* Filters */}
       <div className="rounded-lg bg-white p-4 shadow">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-9">
           <div className="relative sm:col-span-2 lg:col-span-2">
             <HiMagnifyingGlass className="pointer-events-none absolute inset-y-0 left-3 flex h-full items-center text-gray-400" />
             <input
@@ -298,6 +302,17 @@ export default function Students() {
             title="Learner's licence expiry to"
             className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
           />
+
+          <select
+            value={roadSafetyFilter}
+            onChange={(e) => setRoadSafetyFilter(e.target.value)}
+            title="Road safety class status"
+            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
+          >
+            <option value="">All Road Safety</option>
+            <option value="No">Pending</option>
+            <option value="Yes">Completed</option>
+          </select>
 
           <button
             onClick={handleSearch}
