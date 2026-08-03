@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../store/hooks';
 import { setLogout } from '../pages/Login/Login.slice';
@@ -44,6 +44,10 @@ export default function Sidebar() {
     setIsOpen(false);
   };
 
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
+
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -51,7 +55,7 @@ export default function Sidebar() {
       {/* Mobile Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-20 left-4 z-40 lg:hidden bg-[var(--color-forest)] text-[var(--color-cream)] p-2 rounded-lg hover:bg-[var(--color-forest-deep)] transition"
+        className="fixed left-4 top-20 z-50 rounded-lg bg-[var(--color-forest)] p-2 text-[var(--color-cream)] shadow-lg transition hover:bg-[var(--color-forest-deep)] lg:hidden"
       >
         {isOpen ? <HiXMark size={24} /> : <HiBars3 size={24} />}
       </button>
@@ -59,14 +63,14 @@ export default function Sidebar() {
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-16 left-0 h-[calc(100vh-64px)] w-64 bg-[var(--color-forest-deep)] border-r border-[rgba(18,33,28,0.2)] transform transition-transform duration-300 z-35 lg:translate-x-0 ${
+        className={`fixed left-0 top-16 z-50 h-[calc(100vh-64px)] w-[84vw] max-w-xs transform border-r border-[rgba(18,33,28,0.2)] bg-[var(--color-forest-deep)] transition-transform duration-300 lg:w-64 lg:max-w-none lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

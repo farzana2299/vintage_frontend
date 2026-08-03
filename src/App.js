@@ -9,6 +9,13 @@ import Enquiry from './pages/Enquiry/Enquiry';
 import Trainers from './pages/Trainers/Trainers';
 import Students from './pages/Students/Students';
 import Attendance from './pages/Attendance/Attendance';
+import StudentAttendanceDetails from './pages/Attendance/StudentAttendanceDetails';
+import Payments from './pages/Payments/Payments';
+import StudentPaymentDetails from './pages/Payments/StudentPaymentDetails';
+import Income from './pages/Income/Income';
+import Expenses from './pages/Expenses/Expenses';
+import Tests from './pages/Tests/Tests';
+import StudentTestDetails from './pages/Tests/StudentTestDetails';
 
 export default function App() {
   const location = useLocation();
@@ -31,11 +38,14 @@ export default function App() {
           <Route path="/enquiry" element={<Enquiry />} />
           <Route path="/students" element={<Students />} />
           <Route path="/trainers" element={<Trainers />} />
-          <Route path="/payments" element={<div className="p-8"><h1 className="text-4xl font-bold">Payments</h1></div>} />
+          <Route path="/payments" element={<Payments />} />
+          <Route path="/payments/student/:studentId" element={<StudentPaymentDetails />} />
           <Route path="/attendance" element={<Attendance />} />
-          <Route path="/tests" element={<div className="p-8"><h1 className="text-4xl font-bold">Tests</h1></div>} />
-          <Route path="/income" element={<div className="p-8"><h1 className="text-4xl font-bold">Income</h1></div>} />
-          <Route path="/expense" element={<div className="p-8"><h1 className="text-4xl font-bold">Expense</h1></div>} />
+          <Route path="/attendance/student/:studentId" element={<StudentAttendanceDetails />} />
+          <Route path="/tests" element={<Tests />} />
+          <Route path="/tests/student/:studentId" element={<StudentTestDetails />} />
+          <Route path="/income" element={<Income />} />
+          <Route path="/expense" element={<Expenses />} />
         </Route>
       </Routes>
       <ToastContainer />

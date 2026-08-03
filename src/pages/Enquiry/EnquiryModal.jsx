@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { HiXMark } from 'react-icons/hi2';
+import { ENQUIRY_TYPES } from '../../constants/constants';
 
 // Keep date input limits aligned with the user's local calendar day.
 const getTodayLocal = () => {
@@ -191,8 +192,11 @@ export default function EnquiryModal({ isOpen, onClose, onSubmit, enquiry = null
                   : 'border-gray-300 focus:ring-[var(--color-gold)]'
               }`}
             >
-              <option value="Licence">Licence</option>
-              <option value="Practice">Practice</option>
+              {ENQUIRY_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
             </select>
             {errors.enquiryType && (
               <p className="mt-1 text-sm text-red-500">{errors.enquiryType}</p>

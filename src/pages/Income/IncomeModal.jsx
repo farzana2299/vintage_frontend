@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { HiXMark } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
 import { getActiveStudents } from '../../services/student.service';
-import { getActiveTrainers } from '../../services/trainer.service';
+import { INCOME_TYPES } from '../../constants/constants';
 
 const getTodayLocal = () => {
   const now = new Date();
@@ -10,24 +10,17 @@ const getTodayLocal = () => {
   return new Date(now.getTime() - offsetMilliseconds).toISOString().split('T')[0];
 };
 
-export default function AttendanceModal({
-  isOpen,
-  onClose,
-  onSubmit,
-  attendance = null,
-  isLoading = false,
-}) {
+export default function IncomeModal({ isOpen, onClose, onSubmit, income = null, isLoading = false }) {
   const [form, setForm] = useState({
+    incomeDate: getTodayLocal(),
+    incomeType: '',
     studentId: '',
-    classNumber: '',
-    classDate: getTodayLocal(),
-    trainerId: '',
+    amount: '',
     remarks: '',
   });
 
   const [errors, setErrors] = useState({});
   const [students, setStudents] = useState([]);
-  const [trainers, setTrainers] = useState([]);
 
   const activeStudents = useMemo(
     () =>
@@ -41,74 +34,68 @@ export default function AttendanceModal({
     [students]
   );
 
-  const activeTrainers = useMemo(
-    () => trainers.filter((t) => t.activeStatus === 'Active' || t.isActive === true),
-    [trainers]
-  );
+  const studentRequired = form.incomeType && form.incomeType !== 'Others';
 
   useEffect(() => {
-    if (attendance) {
+    if (income) {
       setForm({
-        studentId: attendance.studentId?._id || attendance.studentId || '',
-        classNumber: attendance.classNumber || '',
-        classDate: attendance.classDate
-          ? new Date(attendance.classDate).toISOString().split('T')[0]
+        incomeDate: income.incomeDate
+          ? new Date(income.incomeDate).toISOString().split('T')[0]
           : getTodayLocal(),
-        trainerId: attendance.trainerId?._id || attendance.trainerId || '',
-        remarks: attendance.remarks || '',
+        incomeType: income.incomeType || '',
+        studentId: income.studentId?._id || income.studentId || '',
+        amount: income.amount ?? '',
+        remarks: income.remarks || '',
       });
     } else {
       setForm({
+        incomeDate: getTodayLocal(),
+        incomeType: '',
         studentId: '',
-        classNumber: '',
-        classDate: getTodayLocal(),
-        trainerId: '',
+        amount: '',
         remarks: '',
       });
     }
     setErrors({});
-  }, [attendance, isOpen]);
+  }, [income, isOpen]);
 
   useEffect(() => {
     if (!isOpen) {
       return;
     }
 
-    const loadActiveOptions = async () => {
+    const loadActiveStudents = async () => {
       try {
-        const [studentsResponse, trainersResponse] = await Promise.all([
-          getActiveStudents({ page: 1, limit: 1000 }),
-          getActiveTrainers({ page: 1, limit: 1000 }),
-        ]);
-
-        setStudents(studentsResponse?.data?.students || studentsResponse?.data?.data || []);
-        setTrainers(trainersResponse?.data?.trainers || trainersResponse?.data?.data || []);
+        const response = await getActiveStudents({ page: 1, limit: 1000 });
+        setStudents(response?.data?.students || response?.data?.data || []);
       } catch (error) {
-        toast.error(error?.response?.data?.message || 'Failed to load active students and trainers');
+        toast.error(error?.response?.data?.message || 'Failed to load active students');
       }
     };
 
-    loadActiveOptions();
+    loadActiveStudents();
   }, [isOpen]);
 
   const validate = () => {
     const e = {};
 
-    if (!form.studentId) e.studentId = 'Student is required';
-
-    if (!form.classNumber && form.classNumber !== 0) {
-      e.classNumber = 'Class number is required';
-    } else if (Number(form.classNumber) <= 0) {
-      e.classNumber = 'Class number must be greater than 0';
+    if (!form.incomeDate) {
+      e.incomeDate = 'Income date is required';
+    } else if (form.incomeDate > getTodayLocal()) {
+      e.incomeDate = 'Income date cannot be in the future';
     }
 
-    if (!form.classDate) {
-      e.classDate = 'Class date is required';
-    } else if (form.classDate > getTodayLocal()) {
-      e.classDate = 'Class date cannot be in the future';
+    if (!form.incomeType) e.incomeType = 'Income type is required';
+
+    if (studentRequired && !form.studentId) {
+      e.studentId = 'Student is required for this income type';
     }
 
-    if (!form.trainerId) e.trainerId = 'Trainer is required';
+    if (!form.amount && form.amount !== 0) {
+      e.amount = 'Amount is required';
+    } else if (Number(form.amount) <= 0) {
+      e.amount = 'Amount must be greater than 0';
+    }
 
     if (form.remarks && form.remarks.length > 500) {
       e.remarks = 'Remarks cannot exceed 500 characters';
@@ -120,7 +107,11 @@ export default function AttendanceModal({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === 'incomeType' && value === 'Others' ? { studentId: '' } : {}),
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -129,8 +120,9 @@ export default function AttendanceModal({
 
     onSubmit({
       ...form,
-      classNumber: Number(form.classNumber),
-      ...(attendance && { _id: attendance._id }),
+      amount: Number(form.amount),
+      studentId: form.studentId || undefined,
+      ...(income && { _id: income._id }),
     });
   };
 
@@ -141,7 +133,7 @@ export default function AttendanceModal({
       <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <h2 className="text-xl font-bold text-[var(--color-forest-deep)]">
-            {attendance ? 'Edit Attendance' : 'Record Attendance'}
+            {income ? 'Edit Income' : 'Add Income'}
           </h2>
           <button onClick={onClose} className="text-gray-500 transition-colors hover:text-gray-700">
             <HiXMark className="h-6 w-6" />
@@ -152,7 +144,57 @@ export default function AttendanceModal({
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-[var(--color-forest-deep)]">
-                Student <span className="text-red-500">*</span>
+                Income Date <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="incomeDate"
+                value={form.incomeDate}
+                onChange={handleChange}
+                max={getTodayLocal()}
+                className={`mt-1 w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 ${
+                  errors.incomeDate
+                    ? 'border-red-500 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-[var(--color-gold)]'
+                }`}
+              />
+              {errors.incomeDate && (
+                <p className="mt-1 text-sm text-red-500">{errors.incomeDate}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-forest-deep)]">
+                Income Type <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="incomeType"
+                value={form.incomeType}
+                onChange={handleChange}
+                className={`mt-1 w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 ${
+                  errors.incomeType
+                    ? 'border-red-500 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-[var(--color-gold)]'
+                }`}
+              >
+                <option value="">Select income type</option>
+                {INCOME_TYPES.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+              {errors.incomeType && (
+                <p className="mt-1 text-sm text-red-500">{errors.incomeType}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-forest-deep)]">
+                Student Name {studentRequired && <span className="text-red-500">*</span>}
+                {!studentRequired && form.incomeType === 'Others' && (
+                  <span className="ml-1 text-xs font-normal text-gray-400">(optional)</span>
+                )}
               </label>
               <select
                 name="studentId"
@@ -164,7 +206,7 @@ export default function AttendanceModal({
                     : 'border-gray-300 focus:ring-[var(--color-gold)]'
                 }`}
               >
-                <option value="">Select active student</option>
+                <option value="">Select student</option>
                 {activeStudents.map((student) => (
                   <option key={student._id} value={student._id}>
                     {student.name}
@@ -176,67 +218,22 @@ export default function AttendanceModal({
 
             <div>
               <label className="block text-sm font-medium text-[var(--color-forest-deep)]">
-                Class Number <span className="text-red-500">*</span>
+                Amount (₹) <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
-                name="classNumber"
-                value={form.classNumber}
+                name="amount"
+                value={form.amount}
                 onChange={handleChange}
                 min="1"
                 className={`mt-1 w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 ${
-                  errors.classNumber
+                  errors.amount
                     ? 'border-red-500 focus:ring-red-500'
                     : 'border-gray-300 focus:ring-[var(--color-gold)]'
                 }`}
-                placeholder="Enter class number"
+                placeholder="Enter amount"
               />
-              {errors.classNumber && (
-                <p className="mt-1 text-sm text-red-500">{errors.classNumber}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-[var(--color-forest-deep)]">
-                Class Date <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                name="classDate"
-                value={form.classDate}
-                onChange={handleChange}
-                max={getTodayLocal()}
-                className={`mt-1 w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 ${
-                  errors.classDate
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-[var(--color-gold)]'
-                }`}
-              />
-              {errors.classDate && <p className="mt-1 text-sm text-red-500">{errors.classDate}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-[var(--color-forest-deep)]">
-                Trainer <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="trainerId"
-                value={form.trainerId}
-                onChange={handleChange}
-                className={`mt-1 w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 ${
-                  errors.trainerId
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-[var(--color-gold)]'
-                }`}
-              >
-                <option value="">Select active trainer</option>
-                {activeTrainers.map((trainer) => (
-                  <option key={trainer._id} value={trainer._id}>
-                    {trainer.trainerName}
-                  </option>
-                ))}
-              </select>
-              {errors.trainerId && <p className="mt-1 text-sm text-red-500">{errors.trainerId}</p>}
+              {errors.amount && <p className="mt-1 text-sm text-red-500">{errors.amount}</p>}
             </div>
 
             <div className="sm:col-span-2">
@@ -273,7 +270,7 @@ export default function AttendanceModal({
               disabled={isLoading}
               className="flex-1 rounded-lg bg-[var(--color-gold)] py-2 font-medium text-[var(--color-forest-deep)] transition-colors hover:opacity-90 disabled:opacity-50"
             >
-              {isLoading ? 'Saving...' : attendance ? 'Update' : 'Record'}
+              {isLoading ? 'Saving...' : income ? 'Update' : 'Add Income'}
             </button>
           </div>
         </form>

@@ -44,7 +44,8 @@ const studentSlice = createSlice({
     },
 
     filterStudents: (state, action) => {
-      const { searchTerm, studentType, currentStatus } = action.payload;
+      const { searchTerm, studentType, currentStatus, licenceExpiryFrom, licenceExpiryTo, roadSafetyStatus } =
+        action.payload;
       let filtered = state.students;
 
       if (searchTerm) {
@@ -64,6 +65,20 @@ const studentSlice = createSlice({
 
       if (currentStatus) {
         filtered = filtered.filter((s) => s.currentStatus === currentStatus);
+      }
+
+      if (licenceExpiryFrom || licenceExpiryTo) {
+        filtered = filtered.filter((s) => {
+          if (!s.learnersLicenceExpiryDate) return false;
+          const expiry = s.learnersLicenceExpiryDate.split('T')[0];
+          if (licenceExpiryFrom && expiry < licenceExpiryFrom) return false;
+          if (licenceExpiryTo && expiry > licenceExpiryTo) return false;
+          return true;
+        });
+      }
+
+      if (roadSafetyStatus) {
+        filtered = filtered.filter((s) => (s.roadSafetyClassAttended || 'No') === roadSafetyStatus);
       }
 
       state.filteredStudents = filtered;

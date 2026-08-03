@@ -55,7 +55,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="relative flex min-h-[calc(100vh-72px)] items-center justify-center overflow-hidden px-4 py-16">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10 sm:py-16">
 
       {/* Decorative blobs */}
       <div className="pointer-events-none absolute -top-32 -right-32 h-[480px] w-[480px] rounded-full bg-[var(--color-gold)] opacity-[0.08] blur-3xl" />
@@ -64,7 +64,7 @@ export default function ForgotPassword() {
       <div className="relative w-full max-w-md">
 
         {/* Card */}
-        <div className="rounded-[2.25rem] border border-[rgba(18,33,28,0.09)] bg-[rgba(255,252,245,0.84)] p-10 shadow-[0_32px_80px_rgba(16,39,29,0.12)] backdrop-blur-xl">
+        <div className="rounded-[2.25rem] border border-[rgba(18,33,28,0.09)] bg-[rgba(255,252,245,0.84)] p-6 shadow-[0_32px_80px_rgba(16,39,29,0.12)] backdrop-blur-xl sm:p-10">
 
           {/* Header */}
           <div className="mb-9 flex flex-col items-center gap-4 text-center">

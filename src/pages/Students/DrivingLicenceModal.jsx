@@ -1,5 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { HiXMark, HiPhoto } from 'react-icons/hi2';
+import {
+  GENDER_OPTIONS,
+  CLASS_OF_VEHICLE_OPTIONS,
+  CURRENT_STATUS_OPTIONS,
+} from '../../constants/constants';
+
+// Canonical order used when combining multiple vehicle classes, e.g. "LMV & MCWG".
+const buildClassOfVehicle = (selected) =>
+  CLASS_OF_VEHICLE_OPTIONS.filter((option) => selected.includes(option)).join(' & ');
 
 const INITIAL_FORM = {
   studentType: 'Driving Licence',
@@ -95,6 +104,24 @@ export default function DrivingLicenceModal({
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleClassOfVehicleToggle = (option) => {
+    setForm((prev) => {
+      const selected = prev.classOfVehicle ? prev.classOfVehicle.split(' & ') : [];
+      const isSelected = selected.includes(option);
+
+      if (isSelected && selected.length === 1) {
+        // Keep at least one vehicle class selected at all times.
+        return prev;
+      }
+
+      const nextSelected = isSelected
+        ? selected.filter((item) => item !== option)
+        : [...selected, option];
+
+      return { ...prev, classOfVehicle: buildClassOfVehicle(nextSelected) };
+    });
   };
 
   const handlePhotoChange = (e) => {
@@ -201,9 +228,11 @@ export default function DrivingLicenceModal({
                 onChange={handleChange}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
               >
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
+                {GENDER_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -233,15 +262,22 @@ export default function DrivingLicenceModal({
               <label className="block text-sm font-medium text-[var(--color-forest-deep)]">
                 Class of Vehicle
               </label>
-              <select
-                name="classOfVehicle"
-                value={form.classOfVehicle}
-                onChange={handleChange}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
-              >
-                <option value="LMV">LMV</option>
-                <option value="MCWG">MCWG</option>
-              </select>
+              <div className="mt-2 flex gap-6">
+                {CLASS_OF_VEHICLE_OPTIONS.map((option) => (
+                  <label key={option} className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={form.classOfVehicle.split(' & ').includes(option)}
+                      onChange={() => handleClassOfVehicleToggle(option)}
+                      className="accent-[var(--color-forest)]"
+                    />
+                    <span className="text-sm text-gray-700">{option}</span>
+                  </label>
+                ))}
+              </div>
+              <p className="mt-1 text-xs text-gray-500">
+                Select both to register for LMV &amp; MCWG
+              </p>
             </div>
 
             {/* Current Status */}
@@ -255,8 +291,11 @@ export default function DrivingLicenceModal({
                 onChange={handleChange}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
               >
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
+                {CURRENT_STATUS_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
               </select>
             </div>
 

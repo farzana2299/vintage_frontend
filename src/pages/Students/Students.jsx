@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   setStudents,
@@ -22,9 +23,11 @@ import DrivingLicenceModal from './DrivingLicenceModal';
 import PracticeModal from './PracticeModal';
 import Pagination from '../../componds/Pagination';
 import { HiPlus, HiMagnifyingGlass, HiPencil, HiTrash, HiEye } from 'react-icons/hi2';
+import { CURRENT_STATUS_OPTIONS } from '../../constants/constants';
 
 export default function Students() {
   const dispatch = useAppDispatch();
+  const [searchParams] = useSearchParams();
   const { filteredStudents, loading } = useAppSelector((state) => state.student);
 
   // Modal state
@@ -39,8 +42,15 @@ export default function Students() {
 
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [studentTypeFilter, setStudentTypeFilter] = useState('');
+  const [studentTypeFilter, setStudentTypeFilter] = useState(searchParams.get('studentType') || '');
   const [currentStatusFilter, setCurrentStatusFilter] = useState('');
+  const [licenceExpiryFromFilter, setLicenceExpiryFromFilter] = useState(
+    searchParams.get('licenceExpiryFrom') || ''
+  );
+  const [licenceExpiryToFilter, setLicenceExpiryToFilter] = useState(
+    searchParams.get('licenceExpiryTo') || ''
+  );
+  const [roadSafetyFilter, setRoadSafetyFilter] = useState(searchParams.get('roadSafetyStatus') || '');
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -49,6 +59,7 @@ export default function Students() {
 
   useEffect(() => {
     fetchStudents(page, limit);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, limit]);
 
   const getStudentPhotoUrl = (student) => {
@@ -86,6 +97,19 @@ export default function Students() {
         setPagination(
           response.data.pagination || { total: 0, page: currentPage, limit: currentLimit, pages: 1 }
         );
+        // Deep-linked from Dashboard (e.g. "Learner's Licence Expiring", "Road Safety Pending") — apply it once data is in.
+        if (licenceExpiryFromFilter || licenceExpiryToFilter || roadSafetyFilter || studentTypeFilter) {
+          dispatch(
+            filterStudents({
+              searchTerm,
+              studentType: studentTypeFilter,
+              currentStatus: currentStatusFilter,
+              licenceExpiryFrom: licenceExpiryFromFilter,
+              licenceExpiryTo: licenceExpiryToFilter,
+              roadSafetyStatus: roadSafetyFilter,
+            })
+          );
+        }
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Failed to fetch students');
@@ -179,13 +203,25 @@ export default function Students() {
 
   const handleSearch = () => {
     setPage(1);
-    dispatch(filterStudents({ searchTerm, studentType: studentTypeFilter, currentStatus: currentStatusFilter }));
+    dispatch(
+      filterStudents({
+        searchTerm,
+        studentType: studentTypeFilter,
+        currentStatus: currentStatusFilter,
+        licenceExpiryFrom: licenceExpiryFromFilter,
+        licenceExpiryTo: licenceExpiryToFilter,
+        roadSafetyStatus: roadSafetyFilter,
+      })
+    );
   };
 
   const handleClearFilters = () => {
     setSearchTerm('');
     setStudentTypeFilter('');
     setCurrentStatusFilter('');
+    setLicenceExpiryFromFilter('');
+    setLicenceExpiryToFilter('');
+    setRoadSafetyFilter('');
     setPage(1);
     dispatch(clearFilters());
   };
@@ -196,16 +232,16 @@ export default function Students() {
   };
 
   return (
-    <div className="space-y-6 px-6">
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-[var(--color-forest-deep)]">Student Management</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-forest-deep)] sm:text-3xl">Student Management</h1>
           <p className="mt-1 text-sm text-gray-600">Manage registered students</p>
         </div>
         <button
           onClick={handleAddClick}
-          className="flex items-center gap-2 rounded-lg bg-[var(--color-gold)] px-6 py-2 font-medium text-[var(--color-forest-deep)] transition-colors hover:opacity-90"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--color-gold)] px-6 py-2 font-medium text-[var(--color-forest-deep)] transition-colors hover:opacity-90 sm:w-auto"
         >
           <HiPlus className="h-5 w-5" />
           Add Student
@@ -214,8 +250,8 @@ export default function Students() {
 
       {/* Filters */}
       <div className="rounded-lg bg-white p-4 shadow">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="relative lg:col-span-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-9">
+          <div className="relative sm:col-span-2 lg:col-span-2">
             <HiMagnifyingGlass className="pointer-events-none absolute inset-y-0 left-3 flex h-full items-center text-gray-400" />
             <input
               type="text"
@@ -242,24 +278,55 @@ export default function Students() {
             className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
           >
             <option value="">All Statuses</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
+            {CURRENT_STATUS_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
           </select>
 
-          <div className="flex gap-2">
-            <button
-              onClick={handleSearch}
-              className="flex-1 rounded-lg bg-[var(--color-forest)] px-4 py-2 font-medium text-white transition-colors hover:bg-[var(--color-forest-deep)]"
-            >
-              Search
-            </button>
-            <button
-              onClick={handleClearFilters}
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
-            >
-              Clear
-            </button>
-          </div>
+          <input
+            type="date"
+            value={licenceExpiryFromFilter}
+            onChange={(e) => setLicenceExpiryFromFilter(e.target.value)}
+            max={licenceExpiryToFilter || undefined}
+            title="Learner's licence expiry from"
+            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
+          />
+
+          <input
+            type="date"
+            value={licenceExpiryToFilter}
+            onChange={(e) => setLicenceExpiryToFilter(e.target.value)}
+            min={licenceExpiryFromFilter || undefined}
+            title="Learner's licence expiry to"
+            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
+          />
+
+          <select
+            value={roadSafetyFilter}
+            onChange={(e) => setRoadSafetyFilter(e.target.value)}
+            title="Road safety class status"
+            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20"
+          >
+            <option value="">All Road Safety</option>
+            <option value="No">Pending</option>
+            <option value="Yes">Completed</option>
+          </select>
+
+          <button
+            onClick={handleSearch}
+            className="w-full rounded-lg bg-[var(--color-forest)] px-4 py-2 font-medium text-white transition-colors hover:bg-[var(--color-forest-deep)]"
+          >
+            Search
+          </button>
+
+          <button
+            onClick={handleClearFilters}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            Clear
+          </button>
         </div>
       </div>
 
@@ -275,93 +342,178 @@ export default function Students() {
             <p className="text-sm">Try adjusting your filters or register a new student</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Mobile</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Place</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Type</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredStudents.map((student) => (
-                  <tr key={student._id} className="transition-colors hover:bg-gray-50">
-                    <td className="px-6 py-2 text-sm">
-                      <div className="flex items-center gap-3">
-                        {student.photoUrl ? (
-                          <img
-                            src={student.photoUrl}
-                            alt={student.name}
-                            className="h-8 w-8 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
-                            {student.name?.charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                        <div>
-                          <p className="font-medium text-gray-900">{student.name}</p>
-                          {student.applicationNumber && (
-                            <p className="text-xs text-gray-500">App: {student.applicationNumber}</p>
-                          )}
+          <>
+            {/* Card list - mobile & tablet */}
+            <div className="divide-y divide-gray-200 lg:hidden">
+              {filteredStudents.map((student) => (
+                <div key={student._id} className="space-y-3 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      {student.photoUrl ? (
+                        <img
+                          src={student.photoUrl}
+                          alt={student.name}
+                          className="h-9 w-9 shrink-0 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
+                          {student.name?.charAt(0).toUpperCase()}
                         </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-gray-900">{student.name}</p>
+                        {student.applicationNumber && (
+                          <p className="truncate text-xs text-gray-500">App: {student.applicationNumber}</p>
+                        )}
                       </div>
-                    </td>
-                    <td className="px-6 py-2 text-sm text-gray-600">{student.mobileNumber}</td>
-                    <td className="px-6 py-2 text-sm text-gray-600">{student.place}</td>
-                    <td className="px-6 py-2 text-sm">
-                      <span
-                        className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                          student.studentType === 'Driving Licence'
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-purple-100 text-purple-800'
-                        }`}
-                      >
-                        {student.studentType}
-                      </span>
-                    </td>
-                    <td className="px-6 py-2 text-sm">
-                      <span
-                        className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                          student.currentStatus === 'Completed'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}
-                      >
-                        {student.currentStatus}
-                      </span>
-                    </td>
-                    <td className="px-6 py-2 text-sm">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleViewClick(student._id)}
-                          className="rounded-lg bg-emerald-100 p-2 text-emerald-700 transition-colors hover:bg-emerald-200"
-                        >
-                          <HiEye className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEditClick(student)}
-                          className="rounded-lg bg-blue-100 p-2 text-blue-600 transition-colors hover:bg-blue-200"
-                        >
-                          <HiPencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(student)}
-                          className="rounded-lg bg-red-100 p-2 text-red-600 transition-colors hover:bg-red-200"
-                        >
-                          <HiTrash className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <span
+                      className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                        student.studentType === 'Driving Licence'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-purple-100 text-purple-800'
+                      }`}
+                    >
+                      {student.studentType}
+                    </span>
+                    <span
+                      className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                        student.currentStatus === 'Completed'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}
+                    >
+                      {student.currentStatus}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Mobile</p>
+                      <p className="text-gray-700">{student.mobileNumber || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Place</p>
+                      <p className="text-gray-700">{student.place || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => handleViewClick(student._id)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-100 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-200"
+                    >
+                      <HiEye className="h-4 w-4" />
+                      View
+                    </button>
+                    <button
+                      onClick={() => handleEditClick(student)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-blue-100 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-200"
+                    >
+                      <HiPencil className="h-4 w-4" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(student)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-red-100 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-200"
+                    >
+                      <HiTrash className="h-4 w-4" />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Table - desktop */}
+            <div className="hidden overflow-x-auto lg:block">
+              <table className="w-full min-w-[860px]">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Name</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Mobile</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Place</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Type</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Status</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredStudents.map((student) => (
+                    <tr key={student._id} className="transition-colors hover:bg-gray-50">
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <div className="flex items-center gap-3">
+                          {student.photoUrl ? (
+                            <img
+                              src={student.photoUrl}
+                              alt={student.name}
+                              className="h-8 w-8 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
+                              {student.name?.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-medium text-gray-900">{student.name}</p>
+                            {student.applicationNumber && (
+                              <p className="text-xs text-gray-500">App: {student.applicationNumber}</p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{student.mobileNumber}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{student.place}</td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <span
+                          className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                            student.studentType === 'Driving Licence'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-purple-100 text-purple-800'
+                          }`}
+                        >
+                          {student.studentType}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <span
+                          className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                            student.currentStatus === 'Completed'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}
+                        >
+                          {student.currentStatus}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleViewClick(student._id)}
+                            className="rounded-lg bg-emerald-100 p-2 text-emerald-700 transition-colors hover:bg-emerald-200"
+                          >
+                            <HiEye className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleEditClick(student)}
+                            className="rounded-lg bg-blue-100 p-2 text-blue-600 transition-colors hover:bg-blue-200"
+                          >
+                            <HiPencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(student)}
+                            className="rounded-lg bg-red-100 p-2 text-red-600 transition-colors hover:bg-red-200"
+                          >
+                            <HiTrash className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {!loading && (
@@ -449,7 +601,7 @@ export default function Students() {
               </button>
             </div>
 
-            <div className="overflow-y-auto px-6 py-5">
+            <div className="overflow-y-auto px-4 py-5 sm:px-6">
               {isViewLoading ? (
                 <div className="flex items-center justify-center py-16">
                   <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-[var(--color-gold)]"></div>

@@ -133,16 +133,16 @@ export default function Trainers() {
   };
 
   return (
-    <div className="space-y-6 px-6">
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-[var(--color-forest-deep)]">Trainer Management</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-forest-deep)] sm:text-3xl">Trainer Management</h1>
           <p className="mt-1 text-sm text-gray-600">Manage trainer records</p>
         </div>
         <button
           onClick={handleAddClick}
-          className="flex items-center gap-2 rounded-lg bg-[var(--color-gold)] px-6 py-2 font-medium text-[var(--color-forest-deep)] transition-colors hover:opacity-90"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--color-gold)] px-6 py-2 font-medium text-[var(--color-forest-deep)] transition-colors hover:opacity-90 sm:w-auto"
         >
           <HiPlus className="h-5 w-5" />
           Add Trainer
@@ -151,7 +151,7 @@ export default function Trainers() {
 
       {/* Search and Filter */}
       <div className="rounded-lg bg-white p-4 shadow">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div className="relative">
             <HiMagnifyingGlass className="pointer-events-none absolute inset-y-0 left-3 flex h-full items-center text-gray-400" />
             <input
@@ -175,14 +175,14 @@ export default function Trainers() {
 
           <button
             onClick={handleSearch}
-            className="rounded-lg bg-[var(--color-forest)] px-4 py-2 font-medium text-white transition-colors hover:bg-[var(--color-forest-deep)]"
+            className="w-full rounded-lg bg-[var(--color-forest)] px-4 py-2 font-medium text-white transition-colors hover:bg-[var(--color-forest-deep)]"
           >
             Search
           </button>
 
           <button
             onClick={handleClearFilters}
-            className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >
             Clear Filters
           </button>
@@ -201,55 +201,104 @@ export default function Trainers() {
             <p className="text-sm">Try adjusting your filters or add a new trainer</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Phone</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Place</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredTrainers.map((trainer) => (
-                  <tr key={trainer._id} className="transition-colors hover:bg-gray-50">
-                    <td className="px-6 py-2 text-sm font-medium text-gray-900">{trainer.trainerName}</td>
-                    <td className="px-6 py-2 text-sm text-gray-600">{trainer.phoneNumber}</td>
-                    <td className="px-6 py-2 text-sm text-gray-600">{trainer.place}</td>
-                    <td className="px-6 py-2 text-sm">
-                      <span
-                        className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                          trainer.activeStatus === 'Active'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {trainer.activeStatus || 'Inactive'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-2 text-sm">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEditClick(trainer)}
-                          className="rounded-lg bg-blue-100 p-2 text-blue-600 transition-colors hover:bg-blue-200"
-                        >
-                          <HiPencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(trainer)}
-                          className="rounded-lg bg-red-100 p-2 text-red-600 transition-colors hover:bg-red-200"
-                        >
-                          <HiTrash className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Card list - mobile & tablet */}
+            <div className="divide-y divide-gray-200 lg:hidden">
+              {filteredTrainers.map((trainer) => (
+                <div key={trainer._id} className="space-y-3 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="min-w-0 truncate font-medium text-gray-900">{trainer.trainerName}</p>
+                    <span
+                      className={`inline-block shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
+                        trainer.activeStatus === 'Active'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                    >
+                      {trainer.activeStatus || 'Inactive'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Phone</p>
+                      <p className="text-gray-700">{trainer.phoneNumber || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.1em] text-gray-400">Place</p>
+                      <p className="text-gray-700">{trainer.place || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => handleEditClick(trainer)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-blue-100 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-200"
+                    >
+                      <HiPencil className="h-4 w-4" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(trainer)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-red-100 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-200"
+                    >
+                      <HiTrash className="h-4 w-4" />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Table - desktop */}
+            <div className="hidden overflow-x-auto lg:block">
+              <table className="w-full min-w-[700px]">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Name</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Phone</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Place</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Status</th>
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-700 sm:px-6">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredTrainers.map((trainer) => (
+                    <tr key={trainer._id} className="transition-colors hover:bg-gray-50">
+                      <td className="px-3 py-2 text-sm font-medium text-gray-900 sm:px-6">{trainer.trainerName}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{trainer.phoneNumber}</td>
+                      <td className="px-3 py-2 text-sm text-gray-600 sm:px-6">{trainer.place}</td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <span
+                          className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                            trainer.activeStatus === 'Active'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}
+                        >
+                          {trainer.activeStatus || 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-sm sm:px-6">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditClick(trainer)}
+                            className="rounded-lg bg-blue-100 p-2 text-blue-600 transition-colors hover:bg-blue-200"
+                          >
+                            <HiPencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(trainer)}
+                            className="rounded-lg bg-red-100 p-2 text-red-600 transition-colors hover:bg-red-200"
+                          >
+                            <HiTrash className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {!loading && (
